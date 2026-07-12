@@ -21,6 +21,10 @@ backend/.venv/
 .coverage
 htmlcov/
 
+# Local test databases
+*.db
+backend/test.db
+
 # --------------------------
 # Node
 # --------------------------
