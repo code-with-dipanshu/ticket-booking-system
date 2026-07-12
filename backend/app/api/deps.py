@@ -8,8 +8,11 @@ from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.user import User
 from app.repositories.role import RoleRepository
+from app.repositories.seat_category import SeatCategoryRepository
 from app.repositories.user import UserRepository
+from app.repositories.venue import VenueRepository
 from app.services.auth import AuthService
+from app.services.venue import VenueService
 
 # Extract the Bearer token from the Authorization header.
 # Point to our auth login endpoint to enable interactive Swagger authorization.
@@ -31,12 +34,32 @@ def get_role_repository(db: Session = Depends(get_db)) -> RoleRepository:
     return RoleRepository(db)
 
 
+def get_venue_repository(db: Session = Depends(get_db)) -> VenueRepository:
+    """Dependency that creates a VenueRepository instance."""
+    return VenueRepository(db)
+
+
+def get_seat_category_repository(
+    db: Session = Depends(get_db),
+) -> SeatCategoryRepository:
+    """Dependency that creates a SeatCategoryRepository instance."""
+    return SeatCategoryRepository(db)
+
+
 def get_auth_service(
     user_repo: UserRepository = Depends(get_user_repository),
     role_repo: RoleRepository = Depends(get_role_repository),
 ) -> AuthService:
     """Dependency that creates an AuthService instance."""
     return AuthService(user_repo, role_repo)
+
+
+def get_venue_service(
+    venue_repo: VenueRepository = Depends(get_venue_repository),
+    seat_category_repo: SeatCategoryRepository = Depends(get_seat_category_repository),
+) -> VenueService:
+    """Dependency that creates a VenueService instance."""
+    return VenueService(venue_repo, seat_category_repo)
 
 
 # User Authentication and Authorization dependencies

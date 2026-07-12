@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints import auth as auth_router
 from app.api.v1.endpoints import test_auth as test_auth_router
+from app.api.v1.endpoints import venue as venue_router
 from app.core.config import settings
 from app.core.exceptions import (
     AuthenticationRequiredException,
@@ -20,7 +21,10 @@ from app.db.base import Base
 from app.db.database import engine, SessionLocal
 from app.db.session import get_db
 from app.models.role import Role  # noqa: F401 - registers Role with Base.metadata
+from app.models.seat import Seat  # noqa: F401 - registers Seat with Base.metadata
+from app.models.seat_category import SeatCategory  # noqa: F401 - registers SeatCategory with Base.metadata
 from app.models.user import User  # noqa: F401 - registers User with Base.metadata
+from app.models.venue import Venue  # noqa: F401 - registers Venue with Base.metadata
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +128,12 @@ app.include_router(
     test_auth_router.router,
     prefix=f"{settings.API_V1_STR}/test-auth",
     tags=["Test Authentication"],
+)
+
+app.include_router(
+    venue_router.router,
+    prefix=f"{settings.API_V1_STR}/venues",
+    tags=["Venue Management"],
 )
 
 
