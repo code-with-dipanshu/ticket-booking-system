@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "ticket_booking"
     SQLALCHEMY_DATABASE_URI: Optional[str] = None
 
+    # Security Configuration
+    # In production, this MUST be a randomly generated secure key
+    SECRET_KEY: str = "3f9b2d8e4c7a5b6f0d1e2c3b4a5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
     @model_validator(mode="after")
     def assemble_db_connection(self) -> Self:
         if not self.SQLALCHEMY_DATABASE_URI:
