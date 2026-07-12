@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
@@ -7,6 +7,14 @@ from typing_extensions import Self
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Ticket Booking System"
     API_V1_STR: str = "/api/v1"
+    BACKEND_CORS_ORIGINS: list[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    )
 
     # Database Configuration
     POSTGRES_SERVER: str = "localhost"

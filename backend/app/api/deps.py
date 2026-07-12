@@ -7,14 +7,20 @@ from app.core.config import settings
 from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.user import User
+from app.core.redis import SeatHoldStore
+from app.repositories.booking import BookingRepository
+from app.repositories.booking_seat import BookingSeatRepository
 from app.repositories.event import EventRepository
 from app.repositories.role import RoleRepository
 from app.repositories.seat_category import SeatCategoryRepository
 from app.repositories.user import UserRepository
 from app.repositories.venue import VenueRepository
 from app.services.auth import AuthService
+from app.services.booking import BookingService
 from app.services.event import EventService
 from app.services.venue import VenueService
+
+shared_seat_hold_store = SeatHoldStore()
 
 # Extract the Bearer token from the Authorization header.
 # Point to our auth login endpoint to enable interactive Swagger authorization.
@@ -44,6 +50,18 @@ def get_venue_repository(db: Session = Depends(get_db)) -> VenueRepository:
 def get_event_repository(db: Session = Depends(get_db)) -> EventRepository:
     """Dependency that creates an EventRepository instance."""
     return EventRepository(db)
+
+
+def get_booking_repository(db: Session = Depends(get_db)) -> BookingRepository:
+    """Dependency that creates a BookingRepository instance."""
+    return BookingRepository(db)
+
+
+def get_booking_seat_repository(
+    db: Session = Depends(get_db),
+) -> BookingSeatRepository:
+    """Dependency that creates a BookingSeatRepository instance."""
+    return BookingSeatRepository(db)
 
 
 def get_seat_category_repository(
@@ -76,6 +94,24 @@ def get_event_service(
 ) -> EventService:
     """Dependency that creates an EventService instance."""
     return EventService(event_repo, venue_repo, user_repo)
+
+
+def get_booking_service(
+    booking_repo: BookingRepository = Depends(get_booking_repository),
+    booking_seat_repo: BookingSeatRepository = Depends(get_booking_seat_repository),
+    event_repo: EventRepository = Depends(get_event_repository),
+    seat_category_repo: SeatCategoryRepository = Depends(get_seat_category_repository),
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> BookingService:
+    """Dependency that creates a BookingService instance with a shared hold store."""
+    return BookingService(
+        booking_repo,
+        booking_seat_repo,
+        event_repo,
+        seat_category_repo,
+        user_repo,
+        shared_seat_hold_store,
+    )
 
 
 # User Authentication and Authorization dependencies

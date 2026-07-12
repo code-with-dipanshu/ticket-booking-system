@@ -43,3 +43,8 @@ class Event(Base):
         back_populates="event",
         cascade="all, delete-orphan",
     )
+    bookings: Mapped[List["Booking"]] = relationship(
+        "Booking",
+        back_populates="event",
+        cascade="all, delete-orphan",
+    )

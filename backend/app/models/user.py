@@ -27,3 +27,13 @@ class User(Base):
 
     # Relationship to Role model
     role: Mapped["Role"] = relationship("Role", back_populates="users")
+    organized_events: Mapped[list["Event"]] = relationship(
+        "Event",
+        back_populates="organizer",
+        cascade="all, delete-orphan",
+    )
+    bookings: Mapped[list["Booking"]] = relationship(
+        "Booking",
+        back_populates="customer",
+        cascade="all, delete-orphan",
+    )

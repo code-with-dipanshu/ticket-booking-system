@@ -31,3 +31,8 @@ class SeatCategory(Base):
         back_populates="seat_category",
         cascade="all, delete-orphan",
     )
+    event_prices: Mapped[List["EventPrice"]] = relationship(
+        "EventPrice",
+        back_populates="seat_category",
+        cascade="all, delete-orphan",
+    )

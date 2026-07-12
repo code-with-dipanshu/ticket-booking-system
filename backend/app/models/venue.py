@@ -37,3 +37,8 @@ class Venue(Base):
         back_populates="venue",
         cascade="all, delete-orphan",
     )
+    events: Mapped[List["Event"]] = relationship(
+        "Event",
+        back_populates="venue",
+        cascade="all, delete-orphan",
+    )

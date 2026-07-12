@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.core.redis import SeatHoldStore
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
@@ -32,6 +33,7 @@ def override_get_db():
 @pytest.fixture(scope="function", autouse=True)
 def setup_database():
     """Creates all tables before each test and drops them after."""
+    SeatHoldStore().clear()
     Base.metadata.create_all(bind=test_engine)
 
     # Seed default roles for tests

@@ -2,11 +2,13 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints import auth as auth_router
+from app.api.v1.endpoints import booking as booking_router
 from app.api.v1.endpoints import event as event_router
 from app.api.v1.endpoints import test_auth as test_auth_router
 from app.api.v1.endpoints import venue as venue_router
@@ -21,6 +23,8 @@ from app.core.exceptions import (
 from app.db.base import Base
 from app.db.database import engine, SessionLocal
 from app.db.session import get_db
+from app.models.booking import Booking  # noqa: F401 - registers Booking with Base.metadata
+from app.models.booking_seat import BookingSeat  # noqa: F401 - registers BookingSeat with Base.metadata
 from app.models.event import Event  # noqa: F401 - registers Event with Base.metadata
 from app.models.event_price import EventPrice  # noqa: F401 - registers EventPrice with Base.metadata
 from app.models.role import Role  # noqa: F401 - registers Role with Base.metadata
@@ -74,6 +78,14 @@ app = FastAPI(
     description="Backend API for the Ticket Booking System",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- Global Exception Handlers ---
@@ -143,6 +155,12 @@ app.include_router(
     event_router.router,
     prefix=f"{settings.API_V1_STR}/events",
     tags=["Event Management"],
+)
+
+app.include_router(
+    booking_router.router,
+    prefix=f"{settings.API_V1_STR}/bookings",
+    tags=["Booking Management"],
 )
 
 
