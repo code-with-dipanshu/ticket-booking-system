@@ -7,6 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints import auth as auth_router
+from app.api.v1.endpoints import event as event_router
 from app.api.v1.endpoints import test_auth as test_auth_router
 from app.api.v1.endpoints import venue as venue_router
 from app.core.config import settings
@@ -20,6 +21,8 @@ from app.core.exceptions import (
 from app.db.base import Base
 from app.db.database import engine, SessionLocal
 from app.db.session import get_db
+from app.models.event import Event  # noqa: F401 - registers Event with Base.metadata
+from app.models.event_price import EventPrice  # noqa: F401 - registers EventPrice with Base.metadata
 from app.models.role import Role  # noqa: F401 - registers Role with Base.metadata
 from app.models.seat import Seat  # noqa: F401 - registers Seat with Base.metadata
 from app.models.seat_category import SeatCategory  # noqa: F401 - registers SeatCategory with Base.metadata
@@ -134,6 +137,12 @@ app.include_router(
     venue_router.router,
     prefix=f"{settings.API_V1_STR}/venues",
     tags=["Venue Management"],
+)
+
+app.include_router(
+    event_router.router,
+    prefix=f"{settings.API_V1_STR}/events",
+    tags=["Event Management"],
 )
 
 

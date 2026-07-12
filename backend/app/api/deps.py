@@ -7,11 +7,13 @@ from app.core.config import settings
 from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.user import User
+from app.repositories.event import EventRepository
 from app.repositories.role import RoleRepository
 from app.repositories.seat_category import SeatCategoryRepository
 from app.repositories.user import UserRepository
 from app.repositories.venue import VenueRepository
 from app.services.auth import AuthService
+from app.services.event import EventService
 from app.services.venue import VenueService
 
 # Extract the Bearer token from the Authorization header.
@@ -39,6 +41,11 @@ def get_venue_repository(db: Session = Depends(get_db)) -> VenueRepository:
     return VenueRepository(db)
 
 
+def get_event_repository(db: Session = Depends(get_db)) -> EventRepository:
+    """Dependency that creates an EventRepository instance."""
+    return EventRepository(db)
+
+
 def get_seat_category_repository(
     db: Session = Depends(get_db),
 ) -> SeatCategoryRepository:
@@ -60,6 +67,15 @@ def get_venue_service(
 ) -> VenueService:
     """Dependency that creates a VenueService instance."""
     return VenueService(venue_repo, seat_category_repo)
+
+
+def get_event_service(
+    event_repo: EventRepository = Depends(get_event_repository),
+    venue_repo: VenueRepository = Depends(get_venue_repository),
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> EventService:
+    """Dependency that creates an EventService instance."""
+    return EventService(event_repo, venue_repo, user_repo)
 
 
 # User Authentication and Authorization dependencies
