@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from pydantic import AliasChoices, Field, model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
@@ -13,24 +13,23 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Ticket Booking System"
     API_V1_STR: str = "/api/v1"
     BACKEND_CORS_ORIGINS: list[str] = Field(
-        default_factory=lambda: [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-        ]
-    )
+    default_factory=lambda: [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
 
+        # Render frontend
+        "https://ticket-booking-frontend-uktc.onrender.com",
+    ]
+)
     # Database Configuration
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "ticket_booking"
-    SQLALCHEMY_DATABASE_URI: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("SQLALCHEMY_DATABASE_URI", "DATABASE_URL"),
-    )
+    SQLALCHEMY_DATABASE_URI: Optional[str] = None
 
     # Security Configuration
     # In production, this MUST be a randomly generated secure key
