@@ -27,3 +27,9 @@ class BookingRepository:
         self.db.commit()
         self.db.refresh(booking)
         return booking
+
+    def update(self, booking: Booking) -> Booking:
+        self.db.add(booking)
+        self.db.commit()
+        self.db.refresh(booking)
+        return booking

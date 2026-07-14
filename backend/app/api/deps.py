@@ -102,6 +102,7 @@ def get_booking_service(
     event_repo: EventRepository = Depends(get_event_repository),
     seat_category_repo: SeatCategoryRepository = Depends(get_seat_category_repository),
     user_repo: UserRepository = Depends(get_user_repository),
+    venue_repo: VenueRepository = Depends(get_venue_repository),
 ) -> BookingService:
     """Dependency that creates a BookingService instance with a shared hold store."""
     return BookingService(
@@ -110,6 +111,7 @@ def get_booking_service(
         event_repo,
         seat_category_repo,
         user_repo,
+        venue_repo,
         shared_seat_hold_store,
     )
 

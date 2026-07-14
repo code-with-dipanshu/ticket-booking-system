@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,14 @@ class SeatCategoryRepository:
             self.db.query(SeatCategory)
             .filter(SeatCategory.id == seat_category_id)
             .first()
+        )
+
+    def list_for_venue(self, venue_id: int) -> List[SeatCategory]:
+        return (
+            self.db.query(SeatCategory)
+            .filter(SeatCategory.venue_id == venue_id)
+            .order_by(SeatCategory.id.asc())
+            .all()
         )
 
     def create(self, seat_category: SeatCategory) -> SeatCategory:

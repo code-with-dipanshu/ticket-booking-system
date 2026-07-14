@@ -1,0 +1,45 @@
+# Render service definitions for this repo.
+# After pushing to GitHub, import this repo into Render and the services will be detected.
+
+services:
+  - type: web
+    name: ticket-backend
+    env: docker
+    branch: main
+    repo: REPLACE_WITH_GIT_REPO_URL
+    buildCommand: ""
+    startCommand: |
+      sh -lc "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"
+    envVars:
+      - key: SECRET_KEY
+        generator: secret
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ticket-db
+          property: connectionString
+
+staticSites:
+  - type: static_site
+    name: ticket-frontend
+    repo: REPLACE_WITH_GIT_REPO_URL
+    branch: main
+    root: frontend
+    buildCommand: npm ci && npm run build
+    publishPath: frontend/dist
+
+databases:
+  - name: ticket-db
+    plan: starter
+
+jobs:
+  - name: run-migrations
+    type: job
+    env: docker
+    branch: main
+    repo: REPLACE_WITH_GIT_REPO_URL
+    command: alembic upgrade head
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ticket-db
+          property: connectionString

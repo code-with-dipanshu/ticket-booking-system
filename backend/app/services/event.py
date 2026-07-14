@@ -31,8 +31,8 @@ class EventService:
         if not organizer:
             raise ValueError(f"Organizer with id {organizer_id} not found.")
 
-        if organizer.role.name.lower() != "organizer":
-            raise ValueError("Only organizer users can create events.")
+        if organizer.role.name.lower() not in {"organizer", "admin"}:
+            raise ValueError("Only organizer and admin users can create events.")
 
         event = Event(
             title=data.title,

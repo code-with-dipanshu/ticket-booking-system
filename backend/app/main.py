@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,6 +21,7 @@ from app.core.exceptions import (
     RoleNotFoundException,
     UserAlreadyExistsException,
 )
+from app.core.security import hash_password
 from app.db.base import Base
 from app.db.database import engine, SessionLocal
 from app.db.session import get_db
@@ -59,6 +61,126 @@ def seed_roles() -> None:
         db.close()
 
 
+def seed_demo_content(db: Session | None = None) -> None:
+    """Seed sample users, venue, seat categories, and events for easy customer testing."""
+    should_close = db is None
+    db = db or SessionLocal()
+
+    try:
+        admin_role = db.query(Role).filter(Role.name == "admin").first()
+        organizer_role = db.query(Role).filter(Role.name == "organizer").first()
+        customer_role = db.query(Role).filter(Role.name == "customer").first()
+
+        if not admin_role or not organizer_role or not customer_role:
+            raise RuntimeError("Default roles are not available; seed_roles() must run first.")
+
+        demo_users = [
+            {
+                "email": "admin@booking.com",
+                "password": "secret123",
+                "full_name": "Demo Admin",
+                "role_id": admin_role.id,
+            },
+            {
+                "email": "organizer@booking.com",
+                "password": "secret123",
+                "full_name": "Demo Organizer",
+                "role_id": organizer_role.id,
+            },
+            {
+                "email": "customer@booking.com",
+                "password": "secret123",
+                "full_name": "Demo Customer",
+                "role_id": customer_role.id,
+            },
+        ]
+
+        for user_data in demo_users:
+            existing_user = db.query(User).filter(User.email == user_data["email"]).first()
+            if not existing_user:
+                db.add(
+                    User(
+                        email=user_data["email"],
+                        hashed_password=hash_password(user_data["password"]),
+                        full_name=user_data["full_name"],
+                        role_id=user_data["role_id"],
+                        is_active=True,
+                    )
+                )
+
+        venue = db.query(Venue).filter(Venue.name == "Grand Arena").first()
+        if not venue:
+            venue = Venue(
+                name="Grand Arena",
+                city="Mumbai",
+                address="Marine Drive",
+                capacity=1200,
+                description="Premium concert venue for live events",
+            )
+            db.add(venue)
+            db.flush()
+
+        vip_category = db.query(SeatCategory).filter(SeatCategory.name == "VIP").first()
+        if not vip_category:
+            vip_category = SeatCategory(
+                name="VIP",
+                description="Premium lounge seating",
+                price_multiplier=2.0,
+                venue_id=venue.id,
+            )
+            db.add(vip_category)
+            db.flush()
+
+        standard_category = (
+            db.query(SeatCategory).filter(SeatCategory.name == "Standard").first()
+        )
+        if not standard_category:
+            standard_category = SeatCategory(
+                name="Standard",
+                description="General admission seating",
+                price_multiplier=1.0,
+                venue_id=venue.id,
+            )
+            db.add(standard_category)
+            db.flush()
+
+        organizer_user = db.query(User).filter(User.email == "organizer@booking.com").first()
+        if organizer_user is None:
+            raise RuntimeError("Organizer demo user was not created.")
+
+        event_titles = ["Sunset Live", "Neon Nights"]
+        for title in event_titles:
+            existing_event = db.query(Event).filter(Event.title == title).first()
+            if not existing_event:
+                start_time = datetime.now(timezone.utc) + timedelta(days=14)
+                end_time = start_time + timedelta(hours=3)
+                db.add(
+                    Event(
+                        title=title,
+                        description=(
+                            "A premium live performance with reserved and general admission seating."
+                            if title == "Sunset Live"
+                            else "An electrifying night of music and immersive stage visuals."
+                        ),
+                        venue_id=venue.id,
+                        organizer_id=organizer_user.id,
+                        start_time=start_time,
+                        end_time=end_time,
+                        status="published",
+                    )
+                )
+
+        db.commit()
+        logger.info("Seeded demo content for customer testing.")
+    except Exception as exc:
+        db.rollback()
+        logger.error(f"Error seeding demo content: {exc}")
+        raise
+    finally:
+        if should_close:
+            db.close()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown lifecycle handler."""
@@ -67,6 +189,8 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     logger.info("Seeding default roles...")
     seed_roles()
+    logger.info("Seeding demo content...")
+    seed_demo_content()
     logger.info("Application startup complete.")
     yield
     # Shutdown

@@ -71,3 +71,22 @@ npm run build
 ```bash
 curl http://127.0.0.1:8000/health
 ```
+
+## Deploy to Render (quick)
+
+1. Push this repository to GitHub.
+2. Create a Render account and a managed Postgres database; copy the `DATABASE_URL`.
+3. Import the GitHub repo into Render or use the `render.yaml` manifest included in this repo.
+4. Backend:
+   - Create a Web Service using the `backend` folder and Docker. Render will use `backend/Dockerfile`.
+   - Start command:
+     ```
+     sh -lc "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"
+     ```
+   - Set environment variables in the Render service (see `.env.template`).
+5. Frontend:
+   - Create a Static Site in Render using the `frontend` folder.
+   - Build command: `npm ci && npm run build` and publish directory: `frontend/dist`.
+6. Add a custom domain in Render and enable HTTPS. Share the frontend URL in the README for evaluators.
+
+See `DEPLOY_RENDER.md` for detailed steps and `render.yaml` to deploy services as code.

@@ -32,16 +32,9 @@ def create_venue(
 
 @router.get("", response_model=list[VenueOut])
 def list_venues(
-    current_user: User = Depends(get_current_user),
     venue_service: VenueService = Depends(get_venue_service),
 ):
-    """List all venues. Admin access is required."""
-    if current_user.role.name.lower() != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to perform this action",
-        )
-
+    """List all venues so customers and organizers can browse the catalog."""
     return venue_service.list_venues()
 
 

@@ -65,6 +65,40 @@ def _create_customer_headers(client, email: str = "customer@event.com"):
 
 
 class TestEventManagement:
+    def test_admin_can_create_event(self, client):
+        admin_headers = _create_admin_headers(client)
+        venue_response = client.post(
+            "/api/v1/venues",
+            headers=admin_headers,
+            json={
+                "name": "Admin Event Arena",
+                "city": "Mumbai",
+                "address": "Lower Parel",
+                "capacity": 1000,
+                "description": "Venue for events",
+            },
+        )
+        assert venue_response.status_code == 201
+        venue_id = venue_response.json()["id"]
+
+        response = client.post(
+            "/api/v1/events",
+            headers=admin_headers,
+            json={
+                "title": "Admin Headliner",
+                "description": "Admin created event",
+                "venue_id": venue_id,
+                "start_time": "2026-08-01T18:00:00",
+                "end_time": "2026-08-01T22:00:00",
+                "status": "draft",
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["title"] == "Admin Headliner"
+        assert data["venue_id"] == venue_id
+
     def test_organizer_can_create_event(self, client):
         admin_headers = _create_admin_headers(client)
         venue_response = client.post(
