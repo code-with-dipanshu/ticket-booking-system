@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-const DEFAULT_API = import.meta.env.VITE_API_BASE_URL || 'https://ticket-booking-system-1-okvo.onrender.com';
+const DEFAULT_API = import.meta.env.VITE_API_BASE_URL || 'https://ticket-booking-backend-wg5h.onrender.com';
 const DEFAULT_LAYOUT = {
   stage_label: 'STAGE',
   rows: Array.from({ length: 5 }, (_, index) => ({
