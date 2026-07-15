@@ -1,92 +1,214 @@
-# Ticket Booking System
+# 🎟️ Ticket Booking System
 
-A full-stack portfolio project for ticket booking and event management built with FastAPI, SQLAlchemy, PostgreSQL, Redis, and React/Vite.
+A full-stack Ticket Booking and Event Management System built with **FastAPI, PostgreSQL, SQLAlchemy, Redis, React, and Vite**.
 
-## What is included
+## 🚀 Live Demo
 
-- FastAPI backend with authentication, venues, events, and booking endpoints
-- SQLAlchemy models and repository/service layering
-- JWT-based role authorization
-- Redis-backed seat hold logic with a local in-memory fallback for development
-- React + Vite frontend scaffold for local interaction
-- Docker Compose orchestration for backend, frontend, PostgreSQL, and Redis
+### 🌐 Frontend
+**https://ticket-booking-frontend-uktc.onrender.com**
 
-## Project structure
+### ⚙️ Backend API
+**https://ticket-booking-backend-wg5h.onrender.com**
 
-- `backend/` — FastAPI application and Python services
-- `frontend/` — React + Vite UI
-- `docker-compose.yml` — start the full stack together
-- `docs/` — project documentation and diagrams
+### 📖 API Documentation (Swagger)
+**https://ticket-booking-backend-wg5h.onrender.com/docs**
 
-## Run the full stack
+---
 
-### Option 1: Docker Compose
+## ✨ Features
+
+- 🔐 JWT Authentication & Role-Based Authorization
+- 🎫 Ticket Booking System
+- 🏟️ Venue Management
+- 🎭 Event Management
+- 💺 Seat Booking & Availability
+- ⚡ Redis-based Seat Hold Mechanism
+- 📦 PostgreSQL Database
+- 🐳 Dockerized Deployment
+- 📱 Responsive React Frontend
+- 📚 Interactive API Documentation (Swagger)
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Alembic
+- Redis
+- JWT Authentication
+
+### Frontend
+- React
+- Vite
+- JavaScript
+- HTML/CSS
+
+### DevOps
+- Docker
+- Render
+- GitHub
+
+---
+
+## 📂 Project Structure
+
+```
+Ticket-Booking/
+│
+├── backend/
+│   ├── app/
+│   ├── alembic/
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   ├── Dockerfile
+│   └── package.json
+│
+├── docker-compose.yml
+├── render.yaml
+└── README.md
+```
+
+---
+
+## 🚀 Running Locally
+
+### Clone Repository
+
+```bash
+git clone https://github.com/code-with-dipanshu/ticket-booking-system.git
+cd Ticket-Booking
+```
+
+---
+
+### Backend
+
+```bash
+cd backend
+
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# Linux/Mac
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+uvicorn app.main:app --reload
+```
+
+Backend runs on:
+
+```
+http://localhost:8000
+```
+
+Swagger UI:
+
+```
+http://localhost:8000/docs
+```
+
+---
+
+### Frontend
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Frontend runs on:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 🐳 Docker
+
+Run the complete application using Docker Compose:
 
 ```bash
 docker compose up --build
 ```
 
-This starts:
+Services:
 
-- PostgreSQL on port `5432`
-- Redis on port `6379`
-- Backend on port `8000`
-- Frontend on port `5173`
+| Service | Port |
+|----------|------|
+| Frontend | 5173 |
+| Backend | 8000 |
+| PostgreSQL | 5432 |
+| Redis | 6379 |
 
-### Option 2: Local development
+---
 
-Backend:
+## 🩺 Health Check
 
-```bash
-cd backend
-.venv\Scripts\activate
-pip install -r requirements.txt
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+GET https://ticket-booking-backend-wg5h.onrender.com/health
 ```
 
-Frontend:
+Example Response:
 
-```bash
-cd frontend
-npm install
-npm run dev
+```json
+{
+  "status": "healthy",
+  "database": "connected"
+}
 ```
 
-## Verify the backend
+---
 
-```bash
-cd backend
-.venv\Scripts\python.exe -m pytest -q
-```
+## 🧪 API Testing
 
-## Verify the frontend
+Swagger Documentation:
 
-```bash
-cd frontend
-npm run build
-```
+**https://ticket-booking-backend-wg5h.onrender.com/docs**
 
-## Health check
+Use Swagger UI to test:
 
-```bash
-curl http://127.0.0.1:8000/health
-```
+- User Registration
+- Login
+- Event APIs
+- Venue APIs
+- Ticket Booking APIs
+- Authentication
 
-## Deploy to Render (quick)
+---
 
-1. Push this repository to GitHub.
-2. Create a Render account and a managed Postgres database; copy the `DATABASE_URL`.
-3. Import the GitHub repo into Render or use the `render.yaml` manifest included in this repo.
-4. Backend:
-   - Create a Web Service using the `backend` folder and Docker. Render will use `backend/Dockerfile`.
-   - Start command:
-     ```
-     sh -lc "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"
-     ```
-   - Set environment variables in the Render service (see `.env.template`).
-5. Frontend:
-   - Create a Static Site in Render using the `frontend` folder.
-   - Build command: `npm ci && npm run build` and publish directory: `frontend/dist`.
-6. Add a custom domain in Render and enable HTTPS. Share the frontend URL in the README for evaluators.
+## 🌍 Deployment
 
-See `DEPLOY_RENDER.md` for detailed steps and `render.yaml` to deploy services as code.
+| Service | URL |
+|---------|-----|
+| Frontend | https://ticket-booking-frontend-uktc.onrender.com |
+| Backend | https://ticket-booking-backend-wg5h.onrender.com |
+| Swagger API Docs | https://ticket-booking-backend-wg5h.onrender.com/docs |
+
+---
+
+## 👨‍💻 Author
+
+**Dipanshu Ramteke**
+
+B.Tech Computer Science Engineering (Data Science)
+
+Vishwakarma Institute of Information Technology, Pune
+
+GitHub: https://github.com/code-with-dipanshu
+
+
+---
